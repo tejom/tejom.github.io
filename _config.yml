@@ -12,3 +12,4 @@ github_username:  tejom
 
 # Build settings
 markdown: kramdown
+highlighter: rogue
