@@ -7,7 +7,7 @@ categories: general
 
 I recently heard a bit about Google's protocol to improve web connection's called QUIC. I thought maybe I could learn something cool by messing with it.
 
-At the moment there doesn't seem to be much adoption of QUIC out side of Google's servers and documentation is light compared to other tech things. After reading what I could and wanting to get started I opened up tcpdump and took a loot at what was actually using the protocol. It was pretty easy to narrow down and get a filter, not much talks using UDP on port 443. I'm not sure what it is actually being used for, google.com and searches dont bring anything up but browsing docs and gmail showed some network activity.
+At the moment there doesn't seem to be much adoption of QUIC out side of Google's servers and documentation is light compared to other tech things. After reading what I could and wanting to get started I opened up tcpdump and took a loot at what was actually using the protocol. It was pretty easy to narrow down and get a filter, not much talks using UDP on port 443. I'm not sure what it is actually being used for, google.com and searches don't bring anything up but browsing docs and gmail showed some network activity.
 Tcpdump has packets with the destinations like `sfo07s13-in-f6.1e100.net.https`. I found a server to test some packets on. Chromium includes a test server but it was a bit of work to get it set up. My macbook air doesn't have a ton of extra free space for the source either.
 
 I figured a good place to start would be to see if I can get the server to respond. I captured some more packets, read some documents and opened wireshark and started to try to make sense of what I was seeing.
