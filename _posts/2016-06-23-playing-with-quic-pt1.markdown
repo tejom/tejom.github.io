@@ -24,7 +24,7 @@ I figured a good place to start would be to see if I can get the server to respo
 ~~~
 Accoording the document I read the first thing is probbably a public flag. 8 bytes that hold some informaation about what's coming up. Wireshark helped to make send of these bytes.
 
-I wrote a small program to send some UDP packets. The first thing I tried was sending a small packet that started with `0x08` and a 64 bit connection id of {0x02, 0x03, 0x04, 0x05, 0x06, 0x08, 0x99, 0xff} and looked for this in the packets.
+I wrote a small program to send some UDP packets. The first thing I tried was sending a small packet that started with `0x08` and a 64 bit connection id of `{0x02, 0x03, 0x04, 0x05, 0x06, 0x08, 0x99, 0xff}` and looked for this in the packets.
 
 ~~~
 	0x0000:  383b c83a f511 60f8 1dd0 3012 0800 4500  8;.:..`...0...E.
@@ -58,13 +58,16 @@ conn, err := net.Dial("udp", "216.58.195.225:443")
 ~~~
 
 Set up a new packet to send and it looks a bit better in wireshark
+
 ~~~
 	0x0000:  383b c83a f511 60f8 1dd0 3012 0800 4500  8;.:..`...0...E.
 	0x0010:  002b 9fc6 0000 4011 7cf1 c0a8 0146 d83a  .+....@.|....F.:
 	0x0020:  c3e1 e8b7 01bb 0017 e217 0d02 0304 0506  ................
 	0x0030:  0899 ff51 3032 3501 53                   ...Q025.S
 ~~~
+
 and got a new response after a short wait....
+
 ~~~
 	0x0000:  60f8 1dd0 3012 383b c83a f511 0800 4500  `...0.8;.:....E.
 	0x0010:  005e e1c8 0000 3611 44bc d83a c3e1 c0a8  .^....6.D..:....
