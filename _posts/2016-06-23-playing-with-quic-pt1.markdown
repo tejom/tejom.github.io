@@ -7,10 +7,10 @@ categories: general
 
 I recently heard a bit about Google's protocol to improve web connection's called QUIC. I thought maybe I could learn something cool by messing with it.
 
-At the moment there doesnt seem to be much adoption of QUIC out side of Google's servers and documentation is light compared to other tech things. After reading what I could and wanting to get started I opened up tcpdump and took a loot at what was actually using the protocol. It was pretty easy to narrow down and get a filter, not much talks using UDP on port 443. I'm not sure what it is actually being used for, google.com and searches dont bring anything up but browsing docs and gmail showed some network activity.
-Tcpdump has packets with the destinations like `sfo07s13-in-f6.1e100.net.https`. I found a server to test some packets on. Chromium includes a test server but it was a bit of work to get it set up. My macbook air doesnt have a ton of extra free space for the source either.
+At the moment there doesn't seem to be much adoption of QUIC out side of Google's servers and documentation is light compared to other tech things. After reading what I could and wanting to get started I opened up tcpdump and took a loot at what was actually using the protocol. It was pretty easy to narrow down and get a filter, not much talks using UDP on port 443. I'm not sure what it is actually being used for, google.com and searches dont bring anything up but browsing docs and gmail showed some network activity.
+Tcpdump has packets with the destinations like `sfo07s13-in-f6.1e100.net.https`. I found a server to test some packets on. Chromium includes a test server but it was a bit of work to get it set up. My macbook air doesn't have a ton of extra free space for the source either.
 
-I figured a good place to start would be to see if I can get the server to respond. I caputered some more packets, read some documents and opened wireshark and started to try to make sense of what I was seeing.
+I figured a good place to start would be to see if I can get the server to respond. I captured some more packets, read some documents and opened wireshark and started to try to make sense of what I was seeing.
 
 ~~~
 	> sfo03s01-in-x01.1e100.net.https: [udp sum ok] UDP, length 1350
@@ -22,7 +22,7 @@ I figured a good place to start would be to see if I can get the server to respo
 	0x0050:  8646 0095 023d b400 01a0 0114 0543 484c  .F...=.......CHL
 	0x0060:  4f0f 0000 0050 4144 002b 0400 0053 4e49  O....PAD.+...SNI
 ~~~
-Accoording the document I read the first thing is probbably a public flag. 8 bytes that hold some informaation about what's coming up. Wireshark helped to make send of these bytes.
+According the document I read the first thing is probably a public flag. 8 bytes that hold some information about what's coming up. Wireshark helped to make send of these bytes.
 
 I wrote a small program to send some UDP packets. The first thing I tried was sending a small packet that started with `0x08` and a 64 bit connection id of `{0x02, 0x03, 0x04, 0x05, 0x06, 0x08, 0x99, 0xff}` and looked for this in the packets.
 
