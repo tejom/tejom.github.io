@@ -5,9 +5,9 @@ date:   2016-08-06
 categories: linux programing
 ---
 
-I've been spending more time learning about how Linux works and thought it was best to modify it myself. Syscalls weren't to complex of an idea to wrap my head around. I also haven't seen any guides to do this on the Internet with a newer kernel. I'm using version 4.7. 
+I've been spending more time learning about how Linux works and thought it was best to modify it myself. Syscalls weren't too complex of an idea to wrap my head around. I also haven't seen any guides on to do this on the Internet with a newer kernel. This is all using version 4.7. There doesn't seem to be too much of a diffrence between this version and older ones. The basic idea is the same.
 
-I modifed a couple files: 
+There are a few files to modify: 
 
 - The syscall table at `arch/x86/entry/syscalls/syscall_64.tbl`
 - Headers at `include/linux/syscalls.h`
@@ -25,9 +25,9 @@ In syscalls.h, I found a space that wasn't inside a ifdef block and added.
 asmlinkage long sys_myhello(char *s)
 ~~~
 
-I am defining the syscall, which will be named `sys_myhello` and will take one parameter, a string thats going to be printed in a kernel message.
+This is defining the syscall, which will be named `sys_myhello` and will take one parameter, a string that's going to be printed in a kernel message.
 
-I implemented my new syscall in `kernel/myhello.c`. It's very basic.
+The new syscall implenamtion is in a new file, `kernel/myhello.c`. It's very basic.
 
 ~~~ c
 #include <linux/kernel.h>
@@ -43,14 +43,14 @@ SYSCALL_DEFINE1(myhello,char*, s)
 
 It consists of a couple includes and the syscall macro. There is only one parameter for the syscall so the macro to use is SYSCALL_DEFINE1. I put the name of the syscall, the type it takes and the parameter's name. Then it just prints the string.
 
-Since I placed this in kernel I need to edit the makefile, kernel/Makefile, to compile it.
+Since I placed this in kernel the makefile, kernel/Makefile, need to the be modified to compile it the new code.
 The end of the file seemed like a good place.
 
 ~~~
 obj-y += myhello.o
 ~~~
 
-Then compile the kernel, I also installed the headers to /usr/local `sudo make headers_install INSTALL_HDR_PATH=/usr/local` so I could use the header file that defines the numbers.
+Then I compiled the kernel, I also installed the headers to /usr/local `sudo make headers_install INSTALL_HDR_PATH=/usr/local` so I could use the header file that defines the numbers.
 
 The next part is using the syscall.
 Another really basic c program can do this. 
