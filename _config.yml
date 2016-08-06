@@ -1,10 +1,8 @@
 # Site settings
-title: Matthew Tejo's github page
+title: Matt's Posts
 email: matthew.tejo@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
-  This is my site to write down what I learn and thoughts about programing, system administration, 
-  troubleshooting, tech, linux,and working in tech
-  Hopefully share something useful becasue I'm sure that if I have the problem someone, some where else does too.
+  My site to share some things Ive learned.
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://tejo.github.io" # the base hostname & protocol for your site
 twitter_username: MatthewTejo
