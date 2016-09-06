@@ -11,3 +11,5 @@ github_username:  tejom
 # Build settings
 markdown: kramdown
 highlighter: rouge
+kramdown:
+  input: GFM
