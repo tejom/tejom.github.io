@@ -131,7 +131,8 @@ The two mount lines will mount /proc and /dev in the new filesystem within ./bus
 
 If we compile all of this and run exec "bash" we'll end up in the new container mostly isolated from the original environment.
 
-Part two contains how I set up networking.
+Part two contains how I set up networking. The containers will reach out to the Internet, connect to each other and have ports available on the host.
+
 Check the final code here https://github.com/tejom/container
 
 
