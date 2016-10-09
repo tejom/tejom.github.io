@@ -1,22 +1,22 @@
 ---
 layout: post
-title:  "Containers From Scratch in C"
+title:  "Containers From Scratch pt1"
 date:   2016-10-04
 categories: c linux containers docker
 ---
 
-I thought it would be an interesting project to implement containers in C. This would hopefully breakdown the black box that is containers for me. I figured doing this with C would let me interact directly with the OS and see what is happening.
+I thought it would be an interesting project to implement containers. This would hopefully breakdown the black box that is containers for me. I figured doing this with C would let me interact directly with the OS and see what is happening.
 
-The first thing for me is to figure out is what exactly a container is. After much reading the idea that seemed consistent was containers are something that provides proccess isolation. The end goal for this would be to write something that allows a proccess to run in isolation. 
+The first thing for me is to figure out is what exactly a container is. After much reading the idea that seemed consistent was containers are something that provides process isolation. The end goal for this would be to write something that allows a process to run in isolation. 
 
-My next step is how to get to an isolated proccess. Linux provides a few ways and after a bit of research I came across cgroups, namespaces and chroot. Namespaces in Linux looked like they offered everything chroot would offer and cgroups didn't offer much at this point so I foccused on taking advantage of namespaces.
+My next step is how to get to an isolated process. Linux provides a few ways and after a bit of research I came across cgroups, namespaces and chroot. Namespaces in Linux looked like they offered everything chroot would offer and cgroups didn't offer much at this point as far as accomplishing this goal so I focused on taking advantage of namespaces.
 
-The system I am using for this is Ubuntu 16.04.1 with 4.8-rc5 kernel. I ran into some odd problems with the distobtion and packages while working on this. 
+The system I am using for this is Ubuntu 16.04.1 with 4.8-rc5 kernel. I ran into some odd problems with the distribution and packages while working on this. 
 
-I found alot of great information on using namespces on here http://crosbymichael.com/creating-containers-part-1.html . Everything I did here kind of builds off this article to make something functional. So theres some code simmilarties. 
+I found alot of great information on using namespces <a href="http://crosbymichael.com/creating-containers-part-1.html" >here</a>a> . There are some code similarities since I used this tutorial as a starting point for getting something running.
 
-For part 1 I foccused on hacking together a mount and proccess namespace.
-The final output will be something recogniable as a container I think.
+For part 1 I am focusing on hacking together a mount and process namespace.
+The final output will be something recognizable as a container.
 
 ~~~ shell
 matthewtejo@matthewtejo:~/c/containers$ sudo ./main bash
@@ -32,7 +32,7 @@ tmpfs                   806.1M         0    806.1M   0% /dev
 / # 
 ~~~
 
-The most important part to this is clone(). https://linux.die.net/man/2/clone . Clone is simmilar to fork() and allows some extra flags. These extra flags will allow you to create the namespaces. This code based off the example code from the first article. (child_exec is the same...) The program will run the arguments to the program in the child proccess. 
+The most important part to this is <a href="https://linux.die.net/man/2/clone">clone()</a>. Clone is similar to fork() but allows some extra flags. These extra flags will allow you to create the namespaces. The program will run the arguments to the program in the child process. 
 
 ~~~ c
 int main(int argc, char *argv[])
@@ -59,16 +59,16 @@ int child_exec(void *arg)
 }
 ~~~ 
 
-The two parts are simmilar to doing something like fork and exec. The program passes the command line arguments to the child then uses that in execvp().
+The two parts are similar to doing something like fork and exec. The program passes the command line arguments to the child then uses that in execvp().
 
 To create a filesystem namespace add the flag CLONE_NEWNS to clone `SIGCHLD | CLONE_NEWNS`.
 
-This isnt very straight foward. Mounts can be shared between namesspaces. A situtation I ran into is creating a new mount point on a child proccess namespace and having that exist in the parents. Check /proc/self/mountinfo for shared. If the directory is shared you need to make it private.
+This isn't very straight foward. Mounts can be shared between namesspaces. Clone with CONE_NEWNS will propagate the file system being shared. A situation I ran into is creating a new mount point on a child process namespace and having that exist in the parents. Check /proc/self/mountinfo for shared. If the directory is shared you need to make it private.
 
 `sudo mount --make-rprivate  /`
 Recursively make the mount private.
 
-I ran into an issue where the distribution(possibly more specifically systemd) makes the "/" mount shared. Clone with CLONE_NEWNS propegates the shared status to the child namespace. 
+I ran into an issue where the distribution(possibly more specifically systemd but I need to read more into that) makes the "/" mount shared.
 
 You can check the namesspaces in proc
 
@@ -86,9 +86,9 @@ lrwxrwxrwx 1 matthewtejo matthewtejo 0 Oct  1 14:16 uts -> uts:[4026531838]
 
 or `ls -l /proc/1/ns/`
 
-The next part is creating an isolated proccess list.
+The next part is creating an isolated process list.
 We can do this by adding another flag to clone. `SIGCHLD | CLONE_NEWNS | CLONE_NEWPID`
-Checking the proccess with something like `ps aux` requers fixing /proc first. We unmount it then mount it.
+Checking the process with something like `ps aux` requires fixing /proc first. We unmount it then mount it.
 
 ``` c
 umount2("/proc",MNT_DETACH);
@@ -97,9 +97,9 @@ mount("proc", "/proc", "proc",0, NULL);
 
 This needs to be added to the child_exec function. 
 
-Now with filesystem and process namespaces set up we can do some really simple containers. the syscall pivot_root comes up as a better alternative to chroot in everything I read. https://lk4d4.darth.io/posts/unpriv3/ This article had a nice suggestion of using busy box as the new root file system. Download it and extract it. 
+Now with filesystem and process namespaces set up we can do some really simple containers. the syscall pivot_root comes up as a better alternative to chroot in everything I read. <a href="https://lk4d4.darth.io/posts/unpriv3/" > This article </a> had a nice suggestion of using busy box as the new root file system. Download it and extract it. 
 
-Pivot root doesnt have a wrapper function so I needed to write my own. http://man7.org/linux/man-pages/man2/pivot_root.2.html
+Pivot root doesn't have a wrapper function so I needed to write my own. http://man7.org/linux/man-pages/man2/pivot_root.2.html
 
 ``` c
 //wrapper for pivot root syscall
@@ -129,5 +129,6 @@ We call pivot_root to place us into the new filesystem. The first argument is th
 
 If we compile all of this and run exec "bash" we'll end up in the new container mostly isolated from the original environment.
 
+Part two contains how I set up networking.
 
 
