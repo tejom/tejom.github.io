@@ -5,7 +5,7 @@ date:   2016-10-08
 categories: c linux containers docker networking
 ---
 
-The next thing to do was do get my containers to do some useful stuff on the internet. I wanted my containers to ping each other, connect out to the internet and listen on ports while being fully isolated from the main system. I had to resort to a lot of scripting to get this working simply. A lot of the networking Im sure is really interesting would have taken me off track for the goal here.
+The next thing to do was do get my containers to do some useful stuff on the Internet. I wanted my containers to ping each other, connect out to the Internet and listen on ports while being fully isolated from the main system. I had to resort to a lot of scripting to get this working simply. A lot of the networking I'm sure is really interesting but would have taken me off track for the goal here.
 
 I started with isolating the network namespace.  Add the flag `CLONE_NEWNET` to clone. There wont be much here except the loopback.
 
@@ -21,8 +21,8 @@ veth devices can be used to connect network name spaces. The best description I 
 
 I added two functions create_peer and network_setup that will set this up.
 
-Main will call create_peer which will do the inital configuration of the veth peers.
-Two helful guides on setting up veth pairs and network namespaces. I implement what these explained here.
+Main will call create_peer, which will do the initial configuration of the veth peers.
+Two helpful guides on setting up veth pairs and network namespaces. I implement what these explained here.
 http://blog.scottlowe.org/2013/09/04/introducing-linux-network-namespaces/
 https://blog.yadutaf.fr/2014/01/19/introduction-to-linux-namespaces-part-5-net/
 
@@ -45,7 +45,7 @@ int create_peer()
 }
 ```
 
-This code sets up some strings to call with system(). The veth interface has a random name so multiple containers can exist with veth pairs. veth1 is unique to the container so the same doesnt matter.(docker renames this eth0) The first command creates the veth pair. The second brings the interface that will stay in host's namespace up. You could give this interface and ip address here and connect to the internet.
+This code sets up some strings to call with system(). The veth interface has a random name so multiple containers can exist with veth pairs. veth1 is unique to the container so the same doesn't matter.(docker renames this eth0) The first command creates the veth pair. The second brings the interface that will stay in host's namespace up. You could give this interface and ip address here and connect to the internet.
 
 The next function called is network_setup
 
@@ -82,7 +82,7 @@ Child exec needs to be modified to set up its new interface.
 ```
 
 The default gateway can be the ip address of the hosts veth interface for the pair.
-if you gave the host veth interface an ip address you can enable internet connections with iptables foward rule and nat
+if you gave the host veth interface an ip address you can enable Internet connections with iptables forward rule and nat
 
 ``` bash
 sudo iptables -A FORWARD -i enp0s3 -o br0 -j ACCEPT
@@ -92,20 +92,23 @@ iptables -t nat -A POSTROUTING -s 172.16.0.0/16 -j MASQUERADE
 
 enp0s3 is the main interface in virtualbox.
 
-Now we have basic connetivty thats isolated in the container.
-More complex networking is more interesting. Alot of the work is done in the shell now.
+Now we have basic connectivity thats isolated in the container.
+More complex networking is more interesting. A lot of the work is done in the shell now.
 
-Having containers communicate with each other can be done with a bridge in the host's namespace. Having a port available is done with iptables and port fowarding.
-I got alot of insight into setting this up from here. http://54.71.194.30:4017/articles/networking/
+Having containers communicate with each other can be done with a bridge in the host's namespace. Having a port available is done with iptables and port forwarding.
+I got a lot of insight into setting this up from here. http://54.71.194.30:4017/articles/networking/
 
 The next couple steps will be:
     Setting up a bridge in the host network namespace
-    Ataching the host side of the veth pair to the bridge
+    Attaching the host side of the veth pair to the bridge
     Setting up routing and ip addresses
-    Configuring iptables to foward ports
+    Setting the containers default gateway to the bridge's IP
+    Configuring iptables to forward ports
+
+The containers will all use their veth pair to communicate and the bridge will act as a router through rules in iptables. 
 
 Setting up a bridge is the next step.
-Im using 172.16.0.0/24 for the examples
+I'm using 172.16.0.0/24 for the examples
 
 ``` bash
 brctl addbr br0

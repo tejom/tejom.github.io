@@ -7,15 +7,15 @@ categories: c linux containers docker
 
 I thought it would be an interesting project to implement containers. This would hopefully breakdown the black box that is containers for me. I figured doing this with C would let me interact directly with the OS and see what is happening.
 
-The first thing for me is to figure out is what exactly a container is. After much reading the idea that seemed consistent was containers are something that provides process isolation. The end goal for this would be to write something that allows a process to run in isolation. 
+The first thing for me is to figure out is what exactly a container is. After much reading, the idea that seemed consistent was containers are something that provides process isolation. The end goal for this would be to write something that allows a process to run in isolation. 
 
 My next step is how to get to an isolated process. Linux provides a few ways and after a bit of research I came across cgroups, namespaces and chroot. Namespaces in Linux looked like they offered everything chroot would offer and cgroups didn't offer much at this point as far as accomplishing this goal so I focused on taking advantage of namespaces.
 
 The system I am using for this is Ubuntu 16.04.1 with 4.8-rc5 kernel. I ran into some odd problems with the distribution and packages while working on this. 
 
-I found alot of great information on using namespces <a href="http://crosbymichael.com/creating-containers-part-1.html" >here</a>a> . There are some code similarities since I used this tutorial as a starting point for getting something running.
+I found a lot of great information on using namespces <a href="http://crosbymichael.com/creating-containers-part-1.html" >here</a> . There are some code similarities since I used this tutorial as a starting point for getting something running.
 
-For part 1 I am focusing on hacking together a mount and process namespace.
+For part 1, I am focusing on hacking together a mount and process namespace.
 The final output will be something recognizable as a container.
 
 ~~~ shell
@@ -32,7 +32,7 @@ tmpfs                   806.1M         0    806.1M   0% /dev
 / # 
 ~~~
 
-The most important part to this is <a href="https://linux.die.net/man/2/clone">clone()</a>. Clone is similar to fork() but allows some extra flags. These extra flags will allow you to create the namespaces. The program will run the arguments to the program in the child process. 
+The most important part to this is <a href="https://linux.die.net/man/2/clone">clone()</a>. Clone is similar to fork() but allows some extra flags. These extra flags will allow you to create the namespaces. The program will run the arguments passed to the program in the child process. 
 
 ~~~ c
 int main(int argc, char *argv[])
@@ -63,10 +63,10 @@ The two parts are similar to doing something like fork and exec. The program pas
 
 To create a filesystem namespace add the flag CLONE_NEWNS to clone `SIGCHLD | CLONE_NEWNS`.
 
-This isn't very straight foward. Mounts can be shared between namesspaces. Clone with CONE_NEWNS will propagate the file system being shared. A situation I ran into is creating a new mount point on a child process namespace and having that exist in the parents. Check /proc/self/mountinfo for shared. If the directory is shared you need to make it private.
+This isn't very straight foward. Mounts can be shared between namesspaces. Clone with CONE_NEWNS will propagate the file system being shared. A situation I ran into is creating a new mount point on a child process's namespace and having that exist in the parents. Check /proc/self/mountinfo for shared. If the directory is shared you need to make it private.
 
 `sudo mount --make-rprivate  /`
-Recursively make the mount private.
+Recursively make the "/" mount private.
 
 I ran into an issue where the distribution(possibly more specifically systemd but I need to read more into that) makes the "/" mount shared.
 
@@ -119,13 +119,15 @@ int pivot_root(char *a,char *b)
 Then in child_exec we set up the new file system
 
 ``` c
-pivot_root("./busy","./busy/.old");
+pivot_root("./busybox","./busybox/.old");
 mount("tmpfs","/dev","tmpfs",MS_NOSUID | MS_STRICTATIME,NULL);
 mount("proc", "/proc", "proc",0, NULL);
 umount2("/.old",MNT_DETACH);
 ```
 
 We call pivot_root to place us into the new filesystem. The first argument is the location of the extracted rootfs. Then we mount dev and proc and unmount the old fs.
+
+The two mount lines will mount /proc and /dev in the new filesystem within ./busybox. The we unmount /.old, the location of the original filesystem. We no longer need it.
 
 If we compile all of this and run exec "bash" we'll end up in the new container mostly isolated from the original environment.
 
