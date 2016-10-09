@@ -130,5 +130,6 @@ We call pivot_root to place us into the new filesystem. The first argument is th
 If we compile all of this and run exec "bash" we'll end up in the new container mostly isolated from the original environment.
 
 Part two contains how I set up networking.
+Check the final code here https://github.com/tejom/container
 
 

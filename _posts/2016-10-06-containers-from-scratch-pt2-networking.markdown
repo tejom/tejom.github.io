@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Containers From Scratch Pt.2 Networking"
-date:   2016-10-04
+title:  "Containers From Scratch Pt.2 Networking draft"
+date:   2016-10-08
 categories: c linux containers docker networking
 ---
 
