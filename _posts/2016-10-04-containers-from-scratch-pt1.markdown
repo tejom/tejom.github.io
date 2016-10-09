@@ -32,7 +32,7 @@ tmpfs                   806.1M         0    806.1M   0% /dev
 / # 
 ~~~
 
-The most important part to this is <a href="https://linux.die.net/man/2/clone">clone()</a>. Clone is similar to fork() but allows some extra flags. These extra flags will allow you to create the namespaces. The program will run the arguments passed to the program in the child process. 
+The most important part to this is <a href="https://linux.die.net/man/2/clone">clone()</a>. Clone is similar to fork() but allows some extra flags.(fork uses the clone system call) These extra flags will allow you to create the namespaces. The program will run the arguments passed to the program in the child process. 
 
 ~~~ c
 int main(int argc, char *argv[])
