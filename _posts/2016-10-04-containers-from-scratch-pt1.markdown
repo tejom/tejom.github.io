@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Containers From Scratch pt1"
+title:  "Containers From Scratch Pt. 1"
 date:   2016-10-04
 categories: c linux containers docker
 ---
