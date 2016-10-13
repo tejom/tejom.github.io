@@ -162,9 +162,23 @@ Note: Somehow between upgrading from the rc5 kernel I was using to the released 
 
 That is about all of the major basic features of a container covered and implemented. 
 
-Check out the working code
-https://github.com/tejom/container
+Check the final code here <a href="https://github.com/tejom/container">https://github.com/tejom/container</a>
 
+How to run:
+
+This is fairly simple to run if you would like to try it.
+
+First clone the repo and run `make`. This will create a executable called main.
+
+The program takes to sets of arguments, an ip address for the container and a command to execute.
+
+`sudo ./main 172.16.0.30 bash`
+
+Will run bash in the container.
+
+`sudo ./main 172.16.0.30 nc -l -p 8000`
+
+Will run the nc command with the arguments.
 
 
 
