@@ -133,6 +133,8 @@ If we compile all of this and run exec "bash" we'll end up in the new container 
 
 Part two contains how I set up networking. The containers will reach out to the Internet, connect to each other and have ports available on the host.
 
-Check the final code here https://github.com/tejom/container
+<a href="/c/linux/containers/docker/networking/2016/10/08/containers-from-scratch-pt2-networking.html">Read part 2</a>
+
+Check the final code here <a href="https://github.com/tejom/container">https://github.com/tejom/container</a>
 
 
