@@ -166,10 +166,9 @@ make
 ```
 
 There is probably a way to compile node to show javascript that is on
-the stack. I haven't gotten it to work. Its common to hear that node is single threaded. It's true that the javascript is single threaded. v8 is actually multithreaded so check the other thread stacks gdb.
+the stack. I haven't gotten it to work. Its common to hear that node is single threaded. It's true that the javascript is single threaded. v8 is actually multithreaded so check the other thread stacks gdb.(Keep this is mind if you use strace too!)
 
-Chrome developer tools can also be used. Newer versions of node
-have this built in. Your probabaly better off just using that. If not, node-inspector and node-debug can be used to debug. It works by fowaridng a port.
+Chrome developer tools can also be used. Its got a bunch of features like memory snapshots and profiling. Newer versions of node have this built in. Your probabaly better off just using that. If not, node-inspector and node-debug can be used to debug. It works by fowaridng a port.
 
 Node-debug doesn't bind to all address by default. You'll need to do something
 like this if your on another machine. Then open the given link the browser.
@@ -182,6 +181,8 @@ Chrome tools lets you profile the cpu, take heap snap shots.
 Add '--inspect --debug-brk' to the node command. Forward the port to
 your machine 'ssh -L 9229:127.0.0.1:9229 <user>@<testing vm> -N' and
 open the link in chrome
+
+Heapsnaphots are also just json so they can be examined pretty easily.
 
 Flamegraph profiling:
 
